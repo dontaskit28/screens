@@ -9,6 +9,7 @@ import 'network.dart';
 import 'tokenCreation.service.dart' as tokenFactory;
 import 'evm.service.dart' as evm;
 import 'package:web3dart/credentials.dart';
+import 'package:ipfs_client_flutter/ipfs_client_flutter.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -682,11 +683,7 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      await ImagePickerService.pickImage(context).then((value) {
-                        print(value!);
-                      });
-                    },
+                    onTap: () async {},
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.85,
                       height: 130,
@@ -761,13 +758,24 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
                               ),
                             ),
                             onPressed: () async {
-                              var uri =
-                                  "https://ipfs.io/ipfs/bafkreiacyb535yn2qnqmntihaxybce4ckcvibxufthbxgfn237dkvyfo3e";
+                              if (controller[1].text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: Colors.red.shade400,
+                                    content: const Text("Invalid Url"),
+                                  ),
+                                );
+
+                                return;
+                              }
+                              var uri = controller[1].text;
                               var network = Network.ethereumGoerli;
                               var client = evm.getEthClient(network);
                               var credentials = EthPrivateKey.fromHex(
                                 "fajflkajklajzlkd",
                               );
+
                               try {
                                 await nftFactory.mintNft(
                                     client, network, credentials, uri);
